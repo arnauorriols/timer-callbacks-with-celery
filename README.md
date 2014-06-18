@@ -1,11 +1,11 @@
-Callback Timer in Celery DEMO
-=============================
+Callback Scheduling with Celery DEMO
+==================================
 
 Description
-~~~~~~~~~~~
+-----------
 
-This piece of code is an example of how to implement a callback timer using
-the event loop of the Celery workers.
+This piece of code is an example of how to implement a callback scheduling system
+using the event loop of the Celery workers.
 
 When the celery worker starts, it goes through a series of steps, until it's
 fully loaded. This steps, called 'bootsteps', can be part of the 2 stages that
@@ -14,7 +14,7 @@ components are started, including the event loop (hub) and the timer.
 
 As explained in [the Celery documentation](http://celery.readthedocs.org/en/latest/userguide/extending.html#timer-scheduling-events)
 these blueprints can be used to hook all we want to these differents stages.
-Then, We can use the timer in the Worker Blueprint to set callbacks to be
+Then, We can use the timer in the Worker Blueprint to schedule callbacks to be
 called after some time.
 
 We may use the call_after() method of the timer, but there is one problem:
@@ -25,13 +25,13 @@ Therefore, the solution can be to use a multiprocessing.Queue (actually two)
 to communicate between the tasks and the Timer.
 
 Dependencies
-~~~~~~~~~~~~
-    * Celery
-    * Requests (just for the demo callback)
-    * mock (for the tests)
+------------
+* Celery
+* Requests (just for the demo callback)
+* mock (for the tests)
 
 Usage
-~~~~~
+-----
 To see this demo in action, start the worker in the foreground:
 
 ```
@@ -55,7 +55,7 @@ If everything works as expected, you should see a countdown and finally your ip
 printed in the Celery worker's log.
 
 Tests
-~~~~~
+-----
 To run the tests, as usual:
 
 ```
