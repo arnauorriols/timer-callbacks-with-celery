@@ -11,12 +11,19 @@ from celery_task import WorkerBootstep
 
 class CallbackMock(object):
     called = False
+    wrong_called = False
 
-    def __init__(self):
-        CallbackMock.called = False
+    def __init__(self, wrong=False):
+        if not wrong:
+            CallbackMock.called = False
+            CallbackMock.wrong_called = False
+        self.flag_wrong = wrong
 
     def __call__(self):
-        CallbackMock.called = True
+        if not self.flag_wrong:
+            CallbackMock.called = True
+        else:
+            CallbackMock.wrong_called = True
 
 
 class TestWorkerBootStep(unittest.TestCase):
@@ -82,11 +89,11 @@ class TestWorkerBootStep(unittest.TestCase):
         queue_remove = Queue()
         now = time.time()
         callback_add = CallbackMock()
-        callback_remove = lambda: 'not'
+        callback_remove = CallbackMock(wrong=True)
         self.worker_bootstep.callbacks = {
             'to_remove': {
                 'callback': callback_remove,
-                'ts_fire': now + 2
+                'ts_fire': now + 0.01
             }
         }
         to_add = ('to_add', callback_add, now + 0.01)
@@ -102,6 +109,7 @@ class TestWorkerBootStep(unittest.TestCase):
         self.worker_bootstep.process_timers(self.worker_bootstep.QUEUE_ADD,
                                             self.worker_bootstep.QUEUE_REMOVE)
         self.assertTrue(callback_add.called)
+        self.assertFalse(callback_remove.wrong_called)
 
 
 if __name__ == '__main__':
